@@ -1,11 +1,12 @@
 import yargs from "yargs";
 import validator from 'validator';
 import {hideBin} from "yargs/helpers";
-import { simpanContact } from "./contact.js";
+import { simpanContact, listContacts, cari } from "./contact.js";
+
+const cli = yargs(hideBin(process.argv))
 
 // membuat command untuk lebih dari 1 namun dengan object
-// console.log(yargs(hideBin(process.argv)).argv)
-yargs(hideBin(process.argv)).command({
+cli.command({
     command: 'add',
     describe: 'menambahkan contact',
     builder: {
@@ -33,25 +34,60 @@ yargs(hideBin(process.argv)).command({
         })
     }  
     
-}).argv;
+});
 
 
 
+//cli list nama dan noHP
+cli.command({
+    command: 'list',
+    describe: 'menampilkan nama dan nomor HP',
+    builder: {},
+    handler() {
+        const hasil = listContacts()
+        if(hasil){
+            console.log('kosong')
+        }
+        hasil.forEach(isi=> {
+            console.log(isi)
+        })
+    }
+});
+
+//cli search
+cli.command({
+    command: 'search',
+    describe:'mencari data nama',
+    builder: {
+        nama:{
+            describe:"cari nama",
+            type:"string",
+            demandOption: true,
+        }
+    },
+    handler(argv) {
+        const search = cari(argv.nama);
+    }
+});
 
 
+// cli remove
+cli.command({
+    command: 'remove',
+    describe: "menghapus data",
+    builder: {
+        nama: {
+            describe: 'menghapus data nama inputan',
+            type: 'string',
+            demandOption: true
+        }
+    },
+    handler(argv){
+        const hasil = hapus()
+    }
+})
 
 
-
-// membuat command satu doang
-// yargs(hideBin(process.argv)).command('add', 'menambahkan contact (sebaris)', (yargs)=> {
-//     return yargs.options("nama",{
-//         describe: "menambahkan contact",
-//         demandOption: true,
-//         type: 'string',
-//     });
-// }, (argv)=> {
-// const contact = {
-//     nama : argv.nama
-// }
-// console.log(contact)
-// }).argv
+cli
+    .demandCommand()
+    .argv
