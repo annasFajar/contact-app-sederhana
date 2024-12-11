@@ -1,10 +1,12 @@
 import * as rf from "node:fs";
-import * as rl from "readline";
+// import * as rl from "readline";
+import validator from "validator";
 
-const readline = rl.createInterface({
-    input:process.stdin,
-    output:process.stdout,
-});
+// const readline = rl.createInterface({
+//     input:process.stdin,
+//     output:process.stdout,
+// });
+
 
 const dataDir = './data';
 const fileDir = './data/contact.json';
@@ -18,22 +20,32 @@ if(!rf.existsSync(fileDir)) {
 
 
 
-export function tulisPertanyaan(pertanyaan) {
-    return new Promise((resolve,reject) => {
-        readline.question(pertanyaan, (nama)=> {
-            resolve(nama);
-        });
-    })
-}
+// export function tulisPertanyaan(pertanyaan) {
+//     return new Promise((resolve,reject) => {
+//         readline.question(pertanyaan, (nama)=> {
+//             resolve(nama);
+//         });
+//     })
+// }
 
 
-export const simpanContact = (nama, nomor) => {
+export const simpanContact = ({nama, email, noHP}) => {
     const file2 = rf.readFileSync("data/contact.json","utf-8");
     const fileJson = JSON.parse(file2);
-    const profile = {nama,nomor};
+
+    // validator
+    const validNama = fileJson.find(contact => {
+        return contact.nama === nama
+    })
+    if(validNama) {
+        console.log('nama telah digunakan');
+        return false
+    }
+    
+    const profile = {nama,email,noHP};
     fileJson.push(profile);
     
     rf.writeFileSync("data/contact.json", JSON.stringify(fileJson));
-    readline.close();
+    // readline.close();
 }
 
